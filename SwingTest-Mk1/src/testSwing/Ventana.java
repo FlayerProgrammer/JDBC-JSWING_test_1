@@ -16,6 +16,8 @@ import javax.swing.JTextArea;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.OutputStream;
@@ -32,6 +34,11 @@ import java.util.List;
 import javax.swing.JToggleButton;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.ListSelectionModel;
+import java.awt.Scrollbar;
+import javax.swing.JMenuBar;
 
 public class Ventana extends JFrame {
 
@@ -68,6 +75,7 @@ public class Ventana extends JFrame {
 	private JTextField textField_19;
 	private JTextField textField_20;
 	private JTextField textField_21;
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -205,12 +213,12 @@ public class Ventana extends JFrame {
 				empmng = null;
 			}
 		});
-		button.setBounds(540, 94, 86, 85);
+		button.setBounds(541, 87, 86, 85);
 		panel_3.add(button);
 
 		textArea_2 = new JTextArea();
 		textArea_2.setEditable(false);
-		textArea_2.setBounds(521, 25, 300, 20);
+		textArea_2.setBounds(520, 11, 300, 20);
 		panel_3.add(textArea_2);
 
 		textField_3 = new JTextField();
@@ -288,88 +296,103 @@ public class Ventana extends JFrame {
 		JLabel label_10 = new JLabel("Dept N\u00BA");
 		label_10.setBounds(29, 245, 67, 14);
 		panel_3.add(label_10);
+		
+				JPanel panel_1 = new JPanel();
+				tabbedPane.addTab("Read", null, panel_1, null);
+				
+						JButton btnNewButton = new JButton("Update");
+						btnNewButton.setBounds(158, 11, 90, 23);
+						btnNewButton.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent arg0) {
+								DefaultTableModel model = new DefaultTableModel();
+								if (rdbtnNewRadioButton.isSelected()) {
+									List<Empleado> listaemp = new ArrayList<Empleado>();
+									try {
+										empmng = new Empleados();
+									} catch (SQLException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+									try {
+										listaemp = empmng.ReadAll();
+									} catch (SQLException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									String[] Columnnames = new String[] { "emp_no", "apellido", "oficio", "dir", "fecha_alt", "salario",
+											"comision", " dept_no" };
+									model.setColumnIdentifiers(Columnnames);
+									for (Iterator<Empleado> iterator = listaemp.iterator(); iterator.hasNext();) {
+										Empleado empe = (Empleado) iterator.next();
+										model.addRow(new Object[] { empe.getEmp_no(), empe.getApellido(), empe.getOficio(),
+												empe.getDir(), empe.getFecha_alt(), empe.getSalario(), empe.getComision(),
+												empe.getDept_no() });
+									}
+									table.setModel(model);
+									empmng = null;
+								} else if (rdbtnNewRadioButton_1.isSelected()) {
+									List<Departamento> listadep = new ArrayList<Departamento>();
+									try {
+										depmng = new Departamentos();
+									} catch (SQLException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+									try {
+										listadep = depmng.ReadAll();
+									} catch (SQLException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									String[] Columnnames = new String[] { "Dept_no", "Dnombre", "Dloc" };
+									model.setColumnIdentifiers(Columnnames);
+									table.setAutoResizeMode(1);
+									for (Iterator<Departamento> iterator = listadep.iterator(); iterator.hasNext();) {
+										Departamento depa = (Departamento) iterator.next();
+										model.addRow(new Object[] { depa.getDept_no(), depa.getDnombre(), depa.getLoc() });
+									}
 
-		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Read", null, panel_1, null);
-		panel_1.setLayout(null);
+									table.setModel(model);
 
-		JTextArea textArea_3 = new JTextArea();
-		textArea_3.setBounds(10, 223, 836, 492);
-		panel_1.add(textArea_3);
+								}
+								depmng = null;
 
-		JButton btnNewButton = new JButton("Update");
-		btnNewButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				textArea_3.setText("");
-				if (rdbtnNewRadioButton.isSelected()) {
-					List<Empleado> listaemp = new ArrayList<Empleado>();
-					try {
-						empmng = new Empleados();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					try {
-						listaemp = empmng.ReadAll();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					for (Iterator<Empleado> iterator = listaemp.iterator(); iterator.hasNext();) {
-						Empleado empe = (Empleado) iterator.next();
-						textArea_3.append(empe.toString() + "\n");
-					}
-					empmng = null;
-				} else if (rdbtnNewRadioButton_1.isSelected()) {
-					List<Departamento> listadep = new ArrayList<Departamento>();
-					try {
-						depmng = new Departamentos();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					try {
-						listadep = depmng.ReadAll();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					for (Iterator<Departamento> iterator = listadep.iterator(); iterator.hasNext();) {
-						Departamento depa = (Departamento) iterator.next();
-						textArea_3.append("Dept_no:" + depa.getDept_no() + "|| Nombre:" + depa.getDnombre() + "|| Loc:"
-								+ depa.getLoc() + "\n");
-					}
-
-				}
-				depmng = null;
-
-			}
-		});
-		btnNewButton.setBounds(158, 11, 90, 23);
-		panel_1.add(btnNewButton);
-
-		rdbtnNewRadioButton = new JRadioButton("Empleado");
-		rdbtnNewRadioButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				rdbtnNewRadioButton_1.setSelected(false);
-			}
-		});
-		buttonGroup.add(rdbtnNewRadioButton);
-		rdbtnNewRadioButton.setBounds(64, 57, 109, 23);
-		panel_1.add(rdbtnNewRadioButton);
-
-		rdbtnNewRadioButton_1 = new JRadioButton("Departamentos");
-		rdbtnNewRadioButton_1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				rdbtnNewRadioButton.setSelected(false);
-			}
-		});
-		buttonGroup.add(rdbtnNewRadioButton_1);
-		rdbtnNewRadioButton_1.setBounds(64, 83, 109, 23);
-		panel_1.add(rdbtnNewRadioButton_1);
+							}
+						});
+						panel_1.setLayout(null);
+						panel_1.add(btnNewButton);
+						
+								rdbtnNewRadioButton = new JRadioButton("Empleado");
+								rdbtnNewRadioButton.setBounds(64, 57, 109, 23);
+								rdbtnNewRadioButton.addMouseListener(new MouseAdapter() {
+									@Override
+									public void mouseClicked(MouseEvent arg0) {
+										rdbtnNewRadioButton_1.setSelected(false);
+									}
+								});
+								buttonGroup.add(rdbtnNewRadioButton);
+								panel_1.add(rdbtnNewRadioButton);
+								
+										rdbtnNewRadioButton_1 = new JRadioButton("Departamentos");
+										rdbtnNewRadioButton_1.setBounds(64, 83, 109, 23);
+										rdbtnNewRadioButton_1.addMouseListener(new MouseAdapter() {
+											@Override
+											public void mouseClicked(MouseEvent arg0) {
+												rdbtnNewRadioButton.setSelected(false);
+											}
+										});
+										buttonGroup.add(rdbtnNewRadioButton_1);
+										panel_1.add(rdbtnNewRadioButton_1);
+										
+												JScrollPane scrollPane = new JScrollPane();
+												scrollPane.setBounds(10, 135, 836, 580);
+												panel_1.add(scrollPane);
+												
+														table = new JTable();
+														scrollPane.setViewportView(table);
+														table.setFillsViewportHeight(true);
+														table.setEnabled(false);
 
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Update/Delete", null, panel_2, null);
@@ -489,7 +512,7 @@ public class Ventana extends JFrame {
 		});
 		btnRefresh.setBounds(135, 12, 105, 23);
 		panel_4.add(btnRefresh);
-		
+
 		JLabel label_24 = new JLabel("(Inserte nombre y haga click en \"Refresh\" para buscar.)");
 		label_24.setBounds(74, 43, 322, 14);
 		panel_4.add(label_24);
@@ -667,7 +690,7 @@ public class Ventana extends JFrame {
 		});
 		button_5.setBounds(176, 11, 127, 23);
 		panel_5.add(button_5);
-		
+
 		JLabel label_23 = new JLabel("(Inserte apellido y haga click en \"Refresh\" para buscar.)");
 		label_23.setBounds(89, 45, 322, 14);
 		panel_5.add(label_23);
